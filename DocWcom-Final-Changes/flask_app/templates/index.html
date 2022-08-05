@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #cce3f3;">
+  <a class="navbar-brand" href="#">Will Louden</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+ 
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html
+        ">Home <span class="sr-only">(current)</span></a>
+      </li>
+      
+
+
+      <li class="nav-item dropdown">
+       
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+          </svg>
+          Login
+          </a>
+
+          <div class="dropdown-menu">
+            <div class="col">
+            <div class="card" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">Enter Email to recieve role</h5>
+                <div class="form-data" v-if="!submitted">
+                  <form action="/login" method="POST">
+                    <div class="forms-inputs mb-4"> <span>Email</span> <input name="email" autocomplete="off" type="text" v-model="email" v-bind:class="{'form-control':true, 'is-invalid' : !validEmail(email) && emailBlured}" v-on:blur="emailBlured = true">
+                        <div class="invalid-feedback">A valid email is required!</div>
+                    </div>
+                    <div class="mb-3"> <button v-on:click.stop.prevent="submit" class="btn btn-primary">Login</button> </div>
+                  </form>
+              </div>
+              </div>
+            </div>
+            </div>     
+          </div>  
+
+      </li>
+
+
+      <form method="POST" action="{{ url_for('logout') }}">
+        <button class="btn btn-dark" type="submit">Log out</button>
+        </form>
+</nav>
+  
+
+{% with messages = get_flashed_messages() %}
+
+{% if messages %}
+              {% for message in messages %}
+              <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+          
+
+  <div class="col">
+    <form method="POST" action="{{ url_f
+      or("upload")}}" enctype="multipart/form-data">
+      <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          
+            <h5 class="card-title">Upload your document</h5>
+            <div class="form-group">
+              <label for="usr">Name of file:</label>
+              <input type="text" id="firstname" name="fname" placeholder="filename" REQUIRED class="form-control">
+            </div>
+            <select required class="btn btn-dark" class="form-select form-select-lg" id="teamDropdown" name="teamDropdown" aria-label="Default select example" REQUIRED>
+              
+              <option value>Select Class</option>
+              <option value="general">General</option>
+              <option value="tax">Tax</option>
+              <option value="private">Private</option> 
+              
+            </select>
+            <br>
+            <br>
+                <input required class="form-control" type="file" name="file">
+                
+                
+                <button class="btn btn-primary">Submit</button>
+          
+        </div>
+      </div>
+    </form>
+  </div>
+
+</div>
+</div>
+<br>
+
+<form method="POST" action="{{ url_for('index') }}">
+  <select class="btn btn-dark dropdown-toggle" name="select1"> <!-- note the name -->
+    <option value="None">All</option>
+    <option value="tax">Tax</option>
+    <option value="private">Private</option>
+  </select>
+  <button class="btn btn-dark" type="submit">Go</button>
+</form>
+
+<br>
+<table class="table table-success table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Document Name</th>
+      <th scope="col">Class</th>
+      <th scope="col">Date added</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if change == "manager" %}
+      {% for image in data %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>
+        <form method="POST" action="{{ url_for('name_class', upload_id=image[0]) }}">
+          <input type="text" name="namechange" value="{{ image[1] }}"">
+          <button class="btn btn-dark" type="submit">Go</button>
+        </form>
+        </td>
+        <td>{{ image[3] }}</td>
+        <td>{{ image[2] }}</td>
+        <td>
+        <button type="button" class="btn btn-dark" onclick="window.location='{{url_for('download', upload_id=image[0] )}}';">Download</button>
+        </td>
+        <td>
+        <form method="POST" action="{{ url_for('change_class', upload_id=image[0]) }}">
+          <select class="btn btn-dark dropdown-toggle" name="select2"> <!-- note the name -->
+            <option value="general">All</option>
+            <option value="tax">Tax</option>
+            <option value="private">Private</option>
+          </select>
+          <button class="btn btn-dark" type="submit">Go</button>
+        </form>
+        </td>
+
+
+      </tr>
+      {% endfor %}
+    {% else %}
+      {% for image in data %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ image[1] }}</td>
+        <td>{{ image[3] }}</td>
+        <td>{{ image[2] }}</td>
+        <td>
+        <button type="button" class="btn btn-dark" onclick="window.location='{{url_for('download', upload_id=image[0] )}}';">Download</button>
+        </td>
+
+
+      </tr>
+      {% endfor %}
+      
+    {% endif %}
+  </tbody>
+</table>
+
+{% endblock %}
